@@ -1,0 +1,51 @@
+import re
+
+from twitchio.ext import commands
+
+check_str = re.compile(r"[!\n]*")
+
+
+def webhook(message: str):
+    # send a message to discord webhook.
+    # webhook url is in the environment
+    import os
+
+    import requests
+
+    """
+    url = os.environ.get("WEBHOOK_URL")
+    data = {"content": message}
+    requests.post(
+        url, data=data, headers={"Content-Type": "application/json"}, timeout=15
+    )"""
+    print(message)
+
+
+class Bot(commands.Bot):
+    def __init__(self):
+        super().__init__(
+            token="ACCESS_TOKEN", prefix="?", initial_channels=["orrrchan"]
+        )
+        self.had_i_checked = False
+
+    async def event_ready(self):
+        print(f"Logged in as | {self.nick}")
+        print(f"User id is | {self.user_id}")
+
+    # when a message is sent
+    async def event_message(self, message):
+        if message.content.author == "bbangddeock":
+            if check_str.match(message.content):
+                webhook(f"{message.author.name} 님이 출석하셨어요!")
+                self.had_i_checked = True
+                return
+        if (stream := self.stream) is None:
+            self.had_i_checked = False
+            return
+        if self.stream.uptime > 3600:
+            if not self.had_i_checked:
+                webhook(f"{message.author.name} 님이 출석하지 않으셨어요!")
+
+
+bot = Bot()
+bot.run()
