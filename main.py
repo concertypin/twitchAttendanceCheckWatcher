@@ -6,10 +6,13 @@ import requests
 import dotenv
 from twitchio.ext import commands
 
+
+print("loading env")
 dotenv.load_dotenv(override=True)
+print("loaded env")
 
 check_str = __import__("re").compile(
-    os.environ["NICKNAME"] + r"---> 이 채널의 \n번째 출석체크입니다\..*"
+    r".*" + os.environ["NICKNAME"] + r"---> 이 채널의 \n번째 출석체크입니다\..*"
 )
 
 
@@ -91,5 +94,6 @@ class Bot(commands.Bot):
                 print("stream online and already checked")
 
 
+print("initialized")
 bot = Bot()
 bot.run()
