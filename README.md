@@ -4,4 +4,6 @@
     - ACCESS_TOKEN 은 https://twitchtokengenerator.com/quick/FAd0fHHpkn 에서 발급받는다
     - NICKNAME은 자신의 닉네임을 입력한다(아이디 X)
     - WEBHOOK_URL은 알림을 받을 디스코드 웹훅 URL을 입력한다
+- example.env를 .env로 이름을 바꾼다
+- requirements.txt를 깐다
 - main.py를 실행한다
