@@ -1,11 +1,10 @@
-import re
 import dotenv
 import os
 from twitchio.ext import commands
 
 dotenv.load_dotenv(override=True)
 
-check_str = re.compile("attend.*")
+check_str = __import__("re").compile(r".*---> 이 채널의 \n번째 출석체크입니다\..*")
 
 
 def webhook(message: str):
