@@ -8,7 +8,9 @@ from twitchio.ext import commands
 
 dotenv.load_dotenv(override=True)
 
-check_str = __import__("re").compile(r".*---> 이 채널의 \n번째 출석체크입니다\..*")
+check_str = __import__("re").compile(
+    os.environ["NICKNAME"] + r"---> 이 채널의 \n번째 출석체크입니다\..*"
+)
 
 
 def webhook(message: str):
@@ -33,12 +35,12 @@ def get_stream(channel_name: str) -> bool | int:
     if response.status_code == 200:
         if response.json()["data"]:
             # return stream's uptime in seconds
-            t = response.json()["data"][0][
+            uptime = response.json()["data"][0][
                 "started_at"
             ]  # The UTC date and time (in RFC3339 format) of when the broadcast began.
-            t = datetime.datetime.strptime(t, "%Y-%m-%dT%H:%M:%SZ")
-            t = time.mktime(t.timetuple())
-            return int(time.time() - t)
+            uptime = datetime.datetime.strptime(uptime, "%Y-%m-%dT%H:%M:%SZ")
+            uptime = time.mktime(uptime.timetuple())
+            return int(time.time() - uptime)
         else:
             return False
     else:
@@ -49,7 +51,9 @@ def get_stream(channel_name: str) -> bool | int:
 class Bot(commands.Bot):
     def __init__(self):
         super().__init__(
-            token=os.environ["ACCESS_TOKEN"], prefix="?", initial_channels=["solfibot"]
+            token=os.environ["ACCESS_TOKEN"],
+            prefix="?",
+            initial_channels=[os.environ["CHANNEL"]],
         )
         self.had_i_checked = False
         self.i_said = False
@@ -66,7 +70,7 @@ class Bot(commands.Bot):
                 webhook(f"{message.author.name} 님이 출석하셨어요!")
                 self.had_i_checked = True
                 return
-        is_online = get_stream("ppo_yame")
+        is_online = get_stream(os.environ["CHANNEL"])
         # if stream is offline
         if is_online is False:
             print("stream offline")

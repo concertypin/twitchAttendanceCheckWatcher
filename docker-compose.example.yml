@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  twitchAttendanceCheckWatcher:
+    environment:
+      ###--------FILL THIS THINGS HERE------------
+      ACCESS_TOKEN: your_access_token
+      NICKNAME: your_nickname
+      WEBHOOK_URL: your_webhook_url
+      ###--------FILL THIS THINGS HERE------------
+      CLIENT_ID: gp762nuuoqcoxypju8c569th9wz7q5
+      CHANNEL: orrrchan
+    container_name: twitchAttendanceCheckWatcher
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
