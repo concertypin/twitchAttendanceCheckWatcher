@@ -1,5 +1,9 @@
-import dotenv
 import os
+import datetime
+import time
+import requests
+
+import dotenv
 from twitchio.ext import commands
 
 dotenv.load_dotenv(override=True)
@@ -10,44 +14,35 @@ check_str = __import__("re").compile(r".*---> 이 채널의 \n번째 출석체�
 def webhook(message: str):
     # send a message to discord webhook.
     # webhook url is in the environment.
-
-    import requests
-
     url = os.environ.get("WEBHOOK_URL")
     data = {"content": message}
-    r = requests.post(
+    response = requests.post(
         url, json=data, headers={"Content-Type": "application/json"}, timeout=15
     )
-    # print(r, r.status_code, r.text)
     print(message)
 
 
 def get_stream(channel_name: str) -> bool | int:
     # if stream is offline, return false
-    import requests
-
     url = f"https://api.twitch.tv/helix/streams?user_login={channel_name}"
     headers = {
         "Client-ID": os.environ["CLIENT_ID"],
         "Authorization": "Bearer " + os.environ["ACCESS_TOKEN"],
     }
-    r = requests.get(url, headers=headers, timeout=15)
-    if r.status_code == 200:
-        if r.json()["data"]:
+    response = requests.get(url, headers=headers, timeout=15)
+    if response.status_code == 200:
+        if response.json()["data"]:
             # return stream's uptime in seconds
-            t = r.json()["data"][0][
+            t = response.json()["data"][0][
                 "started_at"
             ]  # The UTC date and time (in RFC3339 format) of when the broadcast began.
-            import datetime
-            import time
-
             t = datetime.datetime.strptime(t, "%Y-%m-%dT%H:%M:%SZ")
             t = time.mktime(t.timetuple())
             return int(time.time() - t)
         else:
             return False
     else:
-        print(r.status_code)
+        print(response.status_code)
         return False
 
 
